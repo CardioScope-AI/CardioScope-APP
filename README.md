@@ -146,3 +146,57 @@ Ces contrôles HTTP ne remplacent pas le test dans le navigateur : navigation en
 Vite Preview sert à la démonstration locale de la compilation ; ce n'est pas un serveur de production. Un déploiement public nécessitera un serveur adapté (par exemple un reverse proxy avec service des fichiers statiques) et une configuration dédiée.
 
 La compilation locale a réussi. Les contrôles HTTP du build et du proxy sont exécutés avec des processus Preview et Uvicorn temporaires sous Windows. Le lancement Linux natif reste à vérifier après installation de son environnement. Docker Compose est validé syntaxiquement ; le démarrage des conteneurs reste à vérifier lorsque le moteur Docker Linux sera disponible. Les sources frontend vérifiées sont celles présentes dans le dépôt voisin au moment du test ; le README ne prétend pas valider des branches GitHub non récupérées.
+
+## Vérifier FastAPI sous Linux (APP #3)
+
+Ce contrôle s'exécute réellement sous Linux (Ubuntu natif ou WSL), avec Python 3.13.7 et les dépendances du dépôt backend. Il ne remplace pas une démonstration depuis un autre poste et ne valide ni Docker ni les prédictions d'un modèle entraîné.
+
+### Préparation Ubuntu / WSL depuis Windows
+
+Ouvrir Ubuntu avec `wsl -d Ubuntu`. Les chemins Windows sont accessibles sous `/mnt/c/`. Conserver l'environnement Python Linux dans le dossier personnel Linux pour éviter de remplacer le `.venv` Windows et pour accélérer l'installation :
+
+```sh
+export PATH="$HOME/.local/bin:$PATH"
+uv python install 3.13.7
+uv venv --python 3.13.7 "$HOME/.local/share/cardioscope/backend-venv"
+cd "/mnt/c/Users/pc/Desktop/ENSA/CI 2/mine/AI/CardioScope/CardioScope-BACKEND"
+uv pip install --python "$HOME/.local/share/cardioscope/backend-venv/bin/python" -r requirements-dev.txt
+```
+
+Ces commandes supposent `uv` déjà installé. Sur un autre poste, adapter le chemin du projet. Les dépôts APP et BACKEND doivent être voisins, avec les branches contenant les gestionnaires d'erreurs, la configuration CORS et les tests récupérées côté backend. Aucun environnement Windows n'est réutilisé sous Linux.
+
+### Contrôle automatique reproductible
+
+Depuis le dépôt APP, dans Ubuntu :
+
+```sh
+"$HOME/.local/share/cardioscope/backend-venv/bin/python" scripts/verify_fastapi_linux.py --report docs/verification-fastapi-linux.json
+```
+
+Le script :
+
+- Exige Linux et Python 3.13.7, puis exécute les tests backend.
+- Lance Uvicorn sur un port local temporaire, depuis un autre dossier que le backend, avec un chemin de modèle volontairement absent.
+- Vérifie `/docs` et `/openapi.json` (200), `/health` sans modèle (503 avec son JSON attendu), une route absente (404) et une méthode incorrecte (405).
+- Vérifie une pré-vérification JSON POST autorisée et une origine non autorisée.
+- Arrête le serveur temporaire, puis enregistre versions, commit backend, état des sources et résultats dans le rapport demandé.
+
+Le chemin `--backend /chemin/vers/CardioScope-BACKEND` peut être précisé si les dépôts ne sont pas voisins. Les routes 422/500 sont testées uniquement par l'application de test du backend ; aucune route de panne n'est ajoutée au serveur réel. Un OPTIONS réussi sur `/predict` ne démontre pas que cette route est implémentée.
+
+### Lancement manuel et accès depuis Windows
+
+Depuis le dépôt backend dans Ubuntu :
+
+```sh
+"$HOME/.local/share/cardioscope/backend-venv/bin/python" -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+Dans le navigateur Windows, ouvrir `http://localhost:8000/docs` et `http://localhost:8000/health`. Arrêter avec Ctrl+C. Si le port est déjà occupé, arrêter l'autre backend ou choisir 8001 et adapter les URL. La réponse health 503 est attendue sans modèle. Le lancement manuel reste indépendant du serveur temporaire du contrôle automatique.
+
+### Limites
+
+La validation est acquise uniquement après exécution réussie du script dans Linux ; les commandes seules ne constituent pas une preuve. Le rapport ne doit être ajouté au dépôt qu'après une exécution réelle. Les tests d'inférence et du parcours complet frontend/backend restent dépendants de `/predict` et de l'artefact ML entraîné.
+
+### État de cette préparation
+
+Le script a passé le contrôle de syntaxe dans Ubuntu/WSL. L'exécution complète n'a pas encore eu lieu : Python 3.13.7 n'était pas installé et son téléchargement via uv a été interrompu après des tentatives réseau infructueuses. Un contrôle HTTP vers GitHub depuis WSL a également dépassé son délai. Aucun rapport de réussite Linux n'a été généré. Reprendre l'installation de Python et des dépendances, puis exécuter le script pour valider la tâche.
