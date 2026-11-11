@@ -197,6 +197,17 @@ Dans le navigateur Windows, ouvrir `http://localhost:8000/docs` et `http://local
 
 La validation est acquise uniquement après exécution réussie du script dans Linux ; les commandes seules ne constituent pas une preuve. Le rapport ne doit être ajouté au dépôt qu'après une exécution réelle. Les tests d'inférence et du parcours complet frontend/backend restent dépendants de `/predict` et de l'artefact ML entraîné.
 
-### État de cette préparation
+### Validation réalisée sous Ubuntu / WSL2
 
-Le script a passé le contrôle de syntaxe dans Ubuntu/WSL. L'exécution complète n'a pas encore eu lieu : Python 3.13.7 n'était pas installé et son téléchargement via uv a été interrompu après des tentatives réseau infructueuses. Un contrôle HTTP vers GitHub depuis WSL a également dépassé son délai. Aucun rapport de réussite Linux n'a été généré. Reprendre l'installation de Python et des dépendances, puis exécuter le script pour valider la tâche.
+La vérification complète sans modèle a réussi avec Python 3.13.7 dans Ubuntu/WSL2. Le rapport original est conservé dans [`docs/verification-fastapi-linux.json`](docs/verification-fastapi-linux.json), horodaté `2026-11-11T23:17:38.669833+00:00` (UTC).
+
+- Commit backend testé : `77915455d42f5fc543cfa2af5b8404ee8cd2051e`.
+- Les huit tests backend ont réussi.
+- Serveur Uvicorn réel : `/docs` et `/openapi.json` répondent 200 ; `/health` répond 503 avec le JSON prévu sans modèle.
+- Une route absente répond 404 et une méthode incorrecte répond 405.
+- Pré-vérification CORS : origine autorisée 200, origine non autorisée 400.
+- Le serveur temporaire a été arrêté à la fin du contrôle.
+
+Le rapport conserve `backend_has_local_changes: true`. Après inspection, Git Windows ne signale aucune modification du backend et les différences signalées par Git WSL disparaissent avec `git diff --ignore-space-at-eol --exit-code` (code 0) : elles correspondent aux fins de ligne du dépôt partagé Windows/Linux, sans différence de code détectée par ce contrôle. Le rapport brut n'a pas été modifié pour masquer cet indicateur.
+
+APP #3 est donc validée pour le lancement local sous Linux/WSL sans modèle. Docker, la prédiction réelle avec `/predict` et l'accès depuis un autre poste du réseau restent hors de cette validation.
