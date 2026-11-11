@@ -16,6 +16,7 @@ services:
   frontend:
     build:
       context: ../CardioScope-FRONTEND
+    command: ["npm", "run", "preview"]
     environment:
       API_PROXY_TARGET: http://backend:8000
     ports:
