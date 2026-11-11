@@ -1,8 +1,10 @@
 # Contrat API — Validé par l'équipe
 
-`POST /predict` reçoit et renvoie du JSON. La route n'est pas encore implémentée. Les 13 champs du profil patient sont tous obligatoires : une valeur absente est invalide.
+`POST /predict` reçoit et renvoie du JSON. La route n'est pas encore implémentée. Les 13 champs du profil patient sont tous obligatoires. Une valeur absente ou `null` est refusée.
 
-L'ordre des champs est celui des colonnes UCI Cleveland, sans la cible `num` : `age`, `sex`, `cp`, `trestbps`, `chol`, `fbs`, `restecg`, `thalach`, `exang`, `oldpeak`, `slope`, `ca`, `thal`.
+Aucune borne métier n'est encore imposée sur les mesures. Un champ JSON supplémentaire est ignoré.
+
+L'ordre des clés JSON n'est pas imposé au client. Le backend reconstruit les colonnes, sans la cible `num`, dans cet ordre : `age`, `sex`, `cp`, `trestbps`, `chol`, `fbs`, `restecg`, `thalach`, `exang`, `oldpeak`, `slope`, `ca`, `thal`.
 
 | Champ | Type JSON | Sens / encodage |
 | --- | --- | --- |
@@ -13,7 +15,7 @@ L'ordre des champs est celui des colonnes UCI Cleveland, sans la cible `num` : `
 | chol | number | cholestérol sérique, mg/dL |
 | fbs | integer | glycémie à jeun > 120 mg/dL : 0 non, 1 oui |
 | restecg | integer | 0 normal, 1 anomalie ST-T, 2 hypertrophie ventriculaire gauche |
-| thalach | number | fréquence cardiaque maximale, battements par minute |
+| thalach | integer | fréquence cardiaque maximale, battements par minute |
 | exang | integer | angine à l'effort : 0 non, 1 oui |
 | oldpeak | number | dépression du segment ST |
 | slope | integer | 1 ascendante, 2 plate, 3 descendante |
