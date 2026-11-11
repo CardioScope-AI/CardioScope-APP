@@ -41,7 +41,7 @@ Sous Linux remplacer `curl.exe` par `curl`. Réponses attendues : 200 pour l’i
 Arrêt : Ctrl+C puis `docker compose down`, ou `docker compose down` depuis un second terminal. Pour démarrer en arrière-plan : `docker compose up --build -d`. Après modification des sources : relancer avec `--build` (pas de montage des sources). Après export du modèle : `docker compose restart backend`.
 
 ## Versions et pipeline
-Images fixées : Node `24.15.0-bookworm-slim`, Python `3.13.7-slim-bookworm`. Frontend installé par `npm ci` et son lockfile ; dépendances Python versionnées dans requirements.txt. Les tags fixent les versions d’exécution, mais pas les correctifs du système de base ni les dépendances Python transitives.
+Images fixées : Node `24.15.0-bookworm-slim`, Python `3.13.7-slim-bookworm`. Frontend installé par `npm ci` et son lockfile, compilé pendant le build Docker puis servi depuis `dist/` avec la commande Compose `npm run preview` ; dépendances Python versionnées dans requirements.txt. Les tags fixent les versions d’exécution, mais pas les correctifs du système de base ni les dépendances Python transitives.
 
 Le dossier voisin `../CardioScope-DATA-ML/artifacts` existe dès le clonage et est monté en lecture seule dans `/models`. Le futur `pipeline.joblib` n’est pas nécessaire au démarrage. Backend et ML partagent les versions Python/scikit-learn/joblib/NumPy/SciPy ; voir leurs README. ML reste une image et une commande séparées, sans entraînement dans Compose.
 
@@ -79,3 +79,70 @@ Le [contrat API](docs/contrat-api.md) est un brouillon : champs, types, encodage
 - `docker compose config` réussi. `docker compose up --build -d` tenté mais bloqué par le moteur Docker Desktop Linux arrêté (pipe `dockerDesktopLinuxEngine` absent). Aucun build d’image ni réseau Docker validé ; relancer les commandes ci-dessus après démarrage de Docker Desktop.
 - Aucun test visuel ou JavaScript dans un navigateur effectué. Aucun entraînement, export ML ou chargement de pipeline réel testé. L’image ML n’a pas été construite.
 - Les serveurs lancés pour les contrôles ont été arrêtés. Aucun commit ni push.
+
+## Compiler et servir le frontend (APP #4)
+
+La version compilée se trouve dans `CardioScope-FRONTEND/dist/`. Elle se distingue du serveur de développement : pas de client Vite de développement ni d'aperçu des résultats simulés. Le serveur de démonstration Vite Preview conserve le proxy `/api` défini dans `vite.config.js` ; ne pas ouvrir `dist/index.html` directement ni utiliser un serveur statique sans proxy pour tester l'API.
+
+### Sans Docker sur Windows
+
+Depuis `CardioScope-FRONTEND`, arrêter le serveur de développement s'il occupe le port 5173, puis :
+
+```powershell
+npm.cmd ci
+npm.cmd run build
+npm.cmd run preview -- --host 127.0.0.1
+```
+
+`npm ci` réinstalle les dépendances du lockfile. Lancer le backend séparément sur le port 8000 selon son README. Ouvrir `http://127.0.0.1:5173/`, puis les vues `/#simulation` et `/#performances`. Les liens avec `#` sont traités dans le navigateur.
+
+Pour utiliser un backend sur une autre adresse, définir la cible avant de lancer Preview :
+
+```powershell
+$env:API_PROXY_TARGET="http://127.0.0.1:8000"
+npm.cmd run preview -- --host 127.0.0.1
+```
+
+### Sans Docker sous Linux
+
+Avec Node 24.15.0 installé sous Linux, depuis le dépôt frontend :
+
+```sh
+npm ci
+npm run build
+API_PROXY_TARGET=http://127.0.0.1:8000 npm run preview -- --host 127.0.0.1
+```
+
+Pour consulter depuis un autre poste du réseau, remplacer l'hôte d'écoute par `0.0.0.0` et utiliser l'adresse IP du serveur dans le navigateur. La cible du proxy reste l'adresse du backend joignable depuis le processus Preview. Ne pas réutiliser les `node_modules` Windows pour une installation Linux ; préférer un clone séparé dans le système de fichiers Linux.
+
+### Avec Docker Compose
+
+Le Dockerfile du dépôt FRONTEND exécute déjà `npm ci` puis `npm run build`. Dans ce dépôt APP, `compose.yaml` remplace maintenant sa commande de démarrage de développement par `npm run preview`. La cible du proxy reste `http://backend:8000`. Aucun changement du Dockerfile frontend n'est nécessaire.
+
+```sh
+docker compose config --quiet
+docker compose up --build -d
+docker compose ps
+docker compose logs --tail=50 frontend backend
+```
+
+Après modification des sources frontend, reconstruire l'image avec `docker compose up --build -d`. Arrêt : `docker compose down`.
+
+### Vérification HTTP reproductible
+
+Depuis le dépôt APP, avec Node 24.15.0 :
+
+```sh
+node scripts/verify-frontend.mjs http://127.0.0.1:5173
+node scripts/verify-frontend.mjs http://127.0.0.1:5173 --with-api
+```
+
+Le premier contrôle exige un HTML compilé sans client Vite de développement, puis vérifie le chargement des fichiers JS/CSS et leurs types MIME. Le second contrôle vérifie aussi le proxy `/api/health` : 200 si modèle prêt, ou 503 avec le format attendu si modèle absent. Un 503 attendu prouve que le proxy atteint le backend ; ce n'est pas un échec de service du frontend. Une panne réseau ou un format health inattendu fait échouer le contrôle.
+
+Ces contrôles HTTP ne remplacent pas le test dans le navigateur : navigation entre les trois vues, affichage mobile, saisie du formulaire et résultat réel lorsque `/predict` sera disponible. Aucun score ni prédiction simulée n'est utilisé pour prouver une intégration réelle.
+
+### Périmètre et état de validation
+
+Vite Preview sert à la démonstration locale de la compilation ; ce n'est pas un serveur de production. Un déploiement public nécessitera un serveur adapté (par exemple un reverse proxy avec service des fichiers statiques) et une configuration dédiée.
+
+La compilation locale a réussi. Les contrôles HTTP du build et du proxy sont exécutés avec des processus Preview et Uvicorn temporaires sous Windows. Le lancement Linux natif reste à vérifier après installation de son environnement. Docker Compose est validé syntaxiquement ; le démarrage des conteneurs reste à vérifier lorsque le moteur Docker Linux sera disponible. Les sources frontend vérifiées sont celles présentes dans le dépôt voisin au moment du test ; le README ne prétend pas valider des branches GitHub non récupérées.
