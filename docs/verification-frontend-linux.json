@@ -1,0 +1,13 @@
+{
+  "verified_at_utc": "2026-11-11T23:36:15.553000+00:00",
+  "system": "Linux",
+  "kernel": "6.6.87.2-microsoft-standard-WSL2",
+  "node": "v24.15.0",
+  "npm": "11.12.1",
+  "frontend_commit": "00fcc2c877e016f64bcbc25363f22d696f9f1c34",
+  "installation": "npm ci dans une copie des fichiers suivis par Git, environnement Linux natif",
+  "build": "npm run build : réussi",
+  "frontend_tests": "✔ envoie le JSON au proxy et accepte les deux classes, dont zéro (293.381173ms)\n✔ refuse une réponse mal formée ou une classe inconnue (117.419363ms)\n✔ garde le statut HTTP même si le serveur renvoie une erreur non JSON (34.144552ms)\n✔ signale une panne réseau (26.432635ms)\n✔ limite le délai de réponse (23.995317ms)\n✔ propage une annulation demandée par la vue (1.133666ms)\n✔ convertit les 13 champs en nombres et conserve les zéros (7.719808ms)\n✔ refuse un champ vide avant toute conversion en zéro (0.656587ms)\n✔ refuse les nombres non finis, codes inconnus et entiers fractionnaires (0.496054ms)\nℹ tests 9\nℹ suites 0\nℹ pass 9\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 917.592847\n",
+  "http_verification": "OK : HTML et 2 fichiers compilés servis, sans client Vite de développement.\nOK : proxy /api/health, HTTP 503, modèle absent.\n",
+  "scope": "Compilation et service Preview Ubuntu/WSL2, JS/CSS et proxy health sans modèle. Pas de test visuel, Docker ou prédiction réelle."
+}

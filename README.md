@@ -145,7 +145,7 @@ Ces contrôles HTTP ne remplacent pas le test dans le navigateur : navigation en
 
 Vite Preview sert à la démonstration locale de la compilation ; ce n'est pas un serveur de production. Un déploiement public nécessitera un serveur adapté (par exemple un reverse proxy avec service des fichiers statiques) et une configuration dédiée.
 
-La compilation locale a réussi. Les contrôles HTTP du build et du proxy sont exécutés avec des processus Preview et Uvicorn temporaires sous Windows. Le lancement Linux natif reste à vérifier après installation de son environnement. Docker Compose est validé syntaxiquement ; le démarrage des conteneurs reste à vérifier lorsque le moteur Docker Linux sera disponible. Les sources frontend vérifiées sont celles présentes dans le dépôt voisin au moment du test ; le README ne prétend pas valider des branches GitHub non récupérées.
+La compilation locale a réussi. Les contrôles HTTP du build et du proxy sont exécutés avec des processus Preview et Uvicorn temporaires sous Windows. Le lancement compilé est également vérifié sous Ubuntu/WSL2 ; voir le rapport `docs/verification-frontend-linux.json`. Docker Compose est validé syntaxiquement ; le démarrage des conteneurs reste à vérifier lorsque le moteur Docker Linux sera disponible. Les sources frontend vérifiées sont celles présentes dans le dépôt voisin au moment du test ; le README ne prétend pas valider des branches GitHub non récupérées.
 
 ## Vérifier FastAPI sous Linux (APP #3)
 
@@ -211,3 +211,11 @@ La vérification complète sans modèle a réussi avec Python 3.13.7 dans Ubuntu
 Le rapport conserve `backend_has_local_changes: true`. Après inspection, Git Windows ne signale aucune modification du backend et les différences signalées par Git WSL disparaissent avec `git diff --ignore-space-at-eol --exit-code` (code 0) : elles correspondent aux fins de ligne du dépôt partagé Windows/Linux, sans différence de code détectée par ce contrôle. Le rapport brut n'a pas été modifié pour masquer cet indicateur.
 
 APP #3 est donc validée pour le lancement local sous Linux/WSL sans modèle. Docker, la prédiction réelle avec `/predict` et l'accès depuis un autre poste du réseau restent hors de cette validation.
+
+## Validation du frontend compilé sous Linux / WSL2
+
+Le contrôle a réussi avec Node Linux 24.15.0 et npm 11.12.1. Le rapport est conservé dans [`docs/verification-frontend-linux.json`](docs/verification-frontend-linux.json) et identifie le commit frontend testé (`00fcc2c877e016f64bcbc25363f22d696f9f1c34`).
+
+Les fichiers suivis par Git du dépôt frontend ont été copiés dans un dossier temporaire du système de fichiers Linux. `npm ci` a installé des dépendances Linux séparées, les neuf tests frontend ont réussi, puis `npm run build` a généré `dist/`. Preview et Uvicorn ont été lancés temporairement sous Linux : le contrôle `scripts/verify-frontend.mjs --with-api` a vérifié le HTML compilé, les deux fichiers JS/CSS et le proxy `/api/health` (503 attendu sans modèle). Les processus et la copie temporaire ont été supprimés à la fin ; les dépendances Windows n'ont pas été remplacées.
+
+La compilation et le service local du frontend sous Linux sont validés. Ce contrôle HTTP n'est pas un test visuel dans un navigateur et ne valide ni Docker ni une prédiction réelle avec `/predict`.
