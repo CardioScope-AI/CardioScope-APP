@@ -1,0 +1,27 @@
+{
+  "verified_at_utc": "2026-11-11T23:17:38.669833+00:00",
+  "system": "Linux",
+  "kernel": "6.6.87.2-microsoft-standard-WSL2",
+  "python": "3.13.7",
+  "backend_commit": "77915455d42f5fc543cfa2af5b8404ee8cd2051e",
+  "backend_has_local_changes": true,
+  "versions": {
+    "fastapi": "0.115.12",
+    "uvicorn": "0.34.2",
+    "scikit-learn": "1.6.1",
+    "joblib": "1.4.2",
+    "numpy": "2.2.6",
+    "scipy": "1.15.3"
+  },
+  "backend_tests": "test_configurable_origins (test_errors_cors.ErrorsAndCorsTests.test_configurable_origins) ... ok\ntest_existing_health_and_docs_remain_available_without_model (test_errors_cors.ErrorsAndCorsTests.test_existing_health_and_docs_remain_available_without_model) ... ok\ntest_http_errors_and_headers (test_errors_cors.ErrorsAndCorsTests.test_http_errors_and_headers) ... ok\ntest_internal_error_is_logged_and_has_cors_headers (test_errors_cors.ErrorsAndCorsTests.test_internal_error_is_logged_and_has_cors_headers) ... ok\ntest_model_paths_do_not_depend_on_working_directory (test_errors_cors.ErrorsAndCorsTests.test_model_paths_do_not_depend_on_working_directory) ... ok\ntest_preflight_allows_local_origins_and_json_post (test_errors_cors.ErrorsAndCorsTests.test_preflight_allows_local_origins_and_json_post) ... ok\ntest_preflight_denies_other_origin_and_method (test_errors_cors.ErrorsAndCorsTests.test_preflight_denies_other_origin_and_method) ... ok\ntest_validation_error_omits_input (test_errors_cors.ErrorsAndCorsTests.test_validation_error_omits_input) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.537s\n\nOK\n",
+  "http_checks": {
+    "health_without_model": 503,
+    "/docs": 200,
+    "/openapi.json": 200,
+    "missing_route": 404,
+    "wrong_method": 405,
+    "preflight_allowed": 200,
+    "preflight_denied": 400
+  },
+  "scope": "WSL/Linux, serveur local sans modèle ; ni Docker ni prédiction réelle validés."
+}
