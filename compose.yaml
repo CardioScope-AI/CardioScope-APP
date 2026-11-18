@@ -12,7 +12,7 @@ services:
         bind:
           create_host_path: false
     ports:
-      - "127.0.0.1:8000:8000"
+      - "${CARDIOSCOPE_BIND_ADDRESS:-127.0.0.1}:8000:8000"
   frontend:
     build:
       context: ../CardioScope-FRONTEND
@@ -20,7 +20,7 @@ services:
     environment:
       API_PROXY_TARGET: http://backend:8000
     ports:
-      - "127.0.0.1:5173:5173"
+      - "${CARDIOSCOPE_BIND_ADDRESS:-127.0.0.1}:5173:5173"
     depends_on:
       backend:
         condition: service_started
