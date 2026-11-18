@@ -40,6 +40,23 @@ Sous Linux remplacer `curl.exe` par `curl`. Réponses attendues : 200 pour l’i
 
 Arrêt : Ctrl+C puis `docker compose down`, ou `docker compose down` depuis un second terminal. Pour démarrer en arrière-plan : `docker compose up --build -d`. Après modification des sources : relancer avec `--build` (pas de montage des sources). Après export du modèle : `docker compose restart backend`.
 
+## Essai depuis un deuxième poste du réseau
+
+Par défaut, Compose publie les ports uniquement sur `127.0.0.1`. Pour ouvrir l'application au réseau local pendant l'essai, définir `CARDIOSCOPE_BIND_ADDRESS` sur la machine qui héberge Docker, depuis `CardioScope-APP` :
+
+```powershell
+$env:CARDIOSCOPE_BIND_ADDRESS="0.0.0.0"
+docker compose up --build -d
+docker compose ps
+ipconfig
+```
+
+Relever l'adresse IPv4 de la carte réseau utilisée par les deux postes. Dans le navigateur du deuxième poste, ouvrir `http://ADRESSE_IPV4:5173/#simulation`. Si nécessaire, autoriser temporairement les ports TCP 5173 et 8000 dans le pare-feu du poste hôte. Utiliser ce mode sur un réseau de confiance seulement ; arrêter ensuite avec `docker compose down`.
+
+Dans la simulation, charger chacun des trois profils et vérifier que les 13 champs se remplissent. Pour tester la validation du formulaire, effacer par exemple l'âge puis cliquer sur « Lancer la prédiction » : le champ doit être signalé et le focus s'y placer. Pour tester la validation backend depuis le deuxième poste, ouvrir `http://ADRESSE_IPV4:8000/docs`, lancer `POST /predict` avec le corps d'exemple en omettant `age`, et vérifier la réponse 422 `validation_error`.
+
+Sans `CardioScope-DATA-ML/artifacts/pipeline.joblib`, les profils valides ne peuvent pas produire de prédiction : l'API répond 503 `model_unavailable`. Une réponse 503 confirme que la requête atteint le backend, mais ne valide pas l'inférence. Pour tester les prédictions réelles, exporter l'artefact ML puis redémarrer le backend Compose.
+
 ## Versions et pipeline
 Images fixées : Node `24.15.0-bookworm-slim`, Python `3.13.7-slim-bookworm`. Frontend installé par `npm ci` et son lockfile, compilé pendant le build Docker puis servi depuis `dist/` avec la commande Compose `npm run preview` ; dépendances Python versionnées dans requirements.txt. Les tags fixent les versions d’exécution, mais pas les correctifs du système de base ni les dépendances Python transitives.
 
