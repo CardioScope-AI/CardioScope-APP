@@ -2,13 +2,14 @@
 
 - Carte : **CardioScope-APP #16**.
 - Version proposée : **extensions v1**, 19 novembre 2026.
-- Statut : **proposition prête à relire par l’équipe**, non encore implémentée.
+- Statut : **validé par l’équipe**, confirmation transmise le 19 novembre 2026 ; extensions non encore implémentées.
 - Référence existante : [contrat de prédiction](contrat-api.md).
 
 Ce document fixe une proposition concrète pour que les responsables frontend,
 backend, ML et déploiement puissent développer les mêmes échanges. Une règle
-ci-dessous devient la référence commune après relecture de la PR. Les durées de
-conservation des simulations et sauvegardes restent à définir dans APP #17.
+ci-dessous est la référence commune validée par l’équipe. Les durées de
+conservation des simulations et sauvegardes sont proposées dans
+[la politique APP #17](regles-conservation.md), également validée par l’équipe.
 
 ## 1. Parcours et choix proposés
 
@@ -372,8 +373,7 @@ passe par défaut ; la commande d’initialisation est distincte.
 
 ## 11. Livraison et compatibilité
 
-1. Relire et fixer les choix de cette proposition ; définir la conservation dans
-   APP #17. Le mot « validé » ne sera ajouté qu’après accord explicite de l’équipe.
+1. Appliquer les choix validés de ce contrat et la politique de conservation APP #17.
 2. Livrer schémas ML et migrations, puis sessions, autorisations et stockage.
 3. Livrer model-info et routes admin avec schémas OpenAPI des erreurs réelles.
 4. Adapter les clients frontend : réponse enrichie de predict, CSRF, cookies,
@@ -397,9 +397,9 @@ pas assimilée à une vérification complète de la base.
 - [ ] Frontend : exemples consommables, CSRF, cookies, pagination et résultat enrichi.
 - [ ] ML : identifiant immuable, empreinte et schéma public cohérents avec les exports.
 - [ ] Déploiement : PostgreSQL, migrations, même origine et HTTPS cible.
-- [ ] Équipe : validation des choix proposés et lien vers la règle de conservation #17.
+- [x] Équipe : validation des choix et de la règle de conservation #17, confirmée le 19 novembre 2026.
 
-La tâche documentaire est prête à relire ; elle ne crée ni les tables ni les
+La tâche documentaire est validée ; elle ne crée ni les tables ni les
 nouvelles routes dans cette branche.
 
 Références techniques :
