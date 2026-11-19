@@ -85,7 +85,7 @@ Compilation frontend : `npm.cmd run build`. Utiliser directement le Python du ve
 4. ML : évaluation, pipeline et export dans DATA-ML/scripts ; coordonner les fichiers avec le membre données.
 5. Intégration : Compose, documentation et validation du contrat dans APP.
 
-Le [contrat API](docs/contrat-api.md) est un brouillon : champs, types, encodages et codes HTTP à confirmer ensemble. `/predict` n’est pas encore implémenté. Le démonstrateur ne fournit aucun diagnostic médical.
+Le [contrat API](docs/contrat-api.md) définit les champs et réponses de la prédiction. Le démonstrateur ne fournit aucun diagnostic médical.
 
 ## Vérifications effectuées le 8 novembre 2026
 
@@ -236,3 +236,9 @@ Le contrôle a réussi avec Node Linux 24.15.0 et npm 11.12.1. Le rapport est co
 Les fichiers suivis par Git du dépôt frontend ont été copiés dans un dossier temporaire du système de fichiers Linux. `npm ci` a installé des dépendances Linux séparées, les neuf tests frontend ont réussi, puis `npm run build` a généré `dist/`. Preview et Uvicorn ont été lancés temporairement sous Linux : le contrôle `scripts/verify-frontend.mjs --with-api` a vérifié le HTML compilé, les deux fichiers JS/CSS et le proxy `/api/health` (503 attendu sans modèle). Les processus et la copie temporaire ont été supprimés à la fin ; les dépendances Windows n'ont pas été remplacées.
 
 La compilation et le service local du frontend sous Linux sont validés. Ce contrôle HTTP n'est pas un test visuel dans un navigateur et ne valide ni Docker ni une prédiction réelle avec `/predict`.
+
+## Extension administrateur et historique (APP #16)
+
+La [proposition de contrat des nouvelles fonctionnalités](docs/contrat-admin-historique.md) documente les routes admin, les sessions/cookies et CSRF, la consultation et la suppression des simulations, les informations du modèle ainsi que la réponse de prédiction enrichie prévue lors de la livraison de l’historique.
+
+Ce document est prêt à relire par les responsables des quatre dépôts ; il ne présente pas les extensions comme déjà implémentées. PostgreSQL, SQLAlchemy/Alembic et les paramètres de session sont des choix proposés à arrêter par l’équipe. Le contrat de prédiction actuel reste la référence de la version en service. Les durées et procédures de conservation appartiennent à APP #17 ; la base persistante à APP #18 et le service du frontend compilé à APP #21.
