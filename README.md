@@ -239,6 +239,10 @@ La compilation et le service local du frontend sous Linux sont validés. Ce cont
 
 ## Extension administrateur et historique (APP #16)
 
+La [politique de conservation proposée (APP #17)](docs/regles-conservation.md)
+précise les durées, la suppression, la purge et le traitement des sauvegardes.
+Elle est validée par l’équipe (confirmation du 19 novembre 2026) et reste à implémenter dans le backend et le déploiement.
+
 La [proposition de contrat des nouvelles fonctionnalités](docs/contrat-admin-historique.md) documente les routes admin, les sessions/cookies et CSRF, la consultation et la suppression des simulations, les informations du modèle ainsi que la réponse de prédiction enrichie prévue lors de la livraison de l’historique.
 
-Ce document est prêt à relire par les responsables des quatre dépôts ; il ne présente pas les extensions comme déjà implémentées. PostgreSQL, SQLAlchemy/Alembic et les paramètres de session sont des choix proposés à arrêter par l’équipe. Le contrat de prédiction actuel reste la référence de la version en service. Les durées et procédures de conservation appartiennent à APP #17 ; la base persistante à APP #18 et le service du frontend compilé à APP #21.
+Ce contrat est validé par l’équipe (confirmation du 19 novembre 2026) ; les extensions restent à implémenter. PostgreSQL, SQLAlchemy/Alembic et les paramètres de session sont les choix retenus. Le contrat de prédiction actuel reste la référence de la version en service. Les durées et procédures de conservation appartiennent à APP #17 ; la base persistante à APP #18 et le service du frontend compilé à APP #21.
