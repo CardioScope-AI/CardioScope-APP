@@ -239,6 +239,17 @@ La compilation et le service local du frontend sous Linux sont validés. Ce cont
 
 ## Extension administrateur et historique (APP #16)
 
+Pour lancer Compose avec PostgreSQL, copier `.env.example` vers `.env` et définir
+`POSTGRES_PASSWORD` avant le premier démarrage. Voir le
+[guide de persistance APP #18](docs/persistance-postgresql.md) pour les commandes
+et le test de conservation du volume. Les tables et migrations restent à livrer
+dans BACKEND #16.
+
+Le test réel de persistance a réussi le 19 novembre 2026 avec PostgreSQL 17.12 :
+la ligne de contrôle reste présente après recréation du conteneur. Voir le
+[rapport PostgreSQL](docs/verification-postgresql.json). Ce test ne couvre pas
+encore les migrations ni les fonctionnalités métier.
+
 La [politique de conservation proposée (APP #17)](docs/regles-conservation.md)
 précise les durées, la suppression, la purge et le traitement des sauvegardes.
 Elle est validée par l’équipe (confirmation du 19 novembre 2026) et reste à implémenter dans le backend et le déploiement.

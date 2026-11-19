@@ -1,0 +1,10 @@
+{
+  "verified_at_utc": "2026-11-19T17:18:31.885115+00:00",
+  "postgres_version": "17.12",
+  "container_before": "7c54d7140955d6fc134b11809b7bac998322d42159739e70a38e30e034982e4e",
+  "container_after": "9fcfb5f996c1ff7a07fa39420389e727d97ef9919ec91c14c6b057f6b42c791d",
+  "container_recreated": true,
+  "rows_after_recreation": 1,
+  "temporary_table_removed": true,
+  "scope": "Compose PostgreSQL volume only; no application tables or migrations validated"
+}
