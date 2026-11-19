@@ -40,3 +40,30 @@ L'ensemble de la chaîne de valeur CardioScope est validé depuis un deuxième p
 - Le proxy Frontend relaie correctement les requêtes vers le Backend.
 - Le modèle Random Forest produit des prédictions fiables et reproductibles conformes au contrat de données.
 - Les mécanismes de sécurité et de validation des saisies (côté client et côté serveur) fonctionnent parfaitement.
+## Répétition finale sur l’ordinateur hôte — 19/11/2026
+
+### Parcours local
+
+- Profil 01 : classe affichée = 0
+- Profil 02 : classe affichée = 1
+- Profil 03 : classe affichée = 0
+- Âge effacé : message « Renseignez le champ “Âge”. » ; envoi bloqué = oui
+- Âge corrigé : nouvelle prédiction affichée = 0
+
+### Accès par l’adresse Wi-Fi de l’ordinateur hôte
+
+- Adresse testée : `http://192.168.1.161:5173/#simulation`
+- Page accessible = oui
+- Profil 01 : classe affichée = 0
+- Profil 02 : classe affichée = 1
+- Profil 03 : classe affichée = 0
+- Âge effacé : erreur affichée et envoi bloqué = oui
+- Âge corrigé : nouvelle prédiction affichée = 0
+
+**Statut du test du 19/11 : vérifié depuis l’ordinateur hôte. Ce test n’a pas été effectué depuis un deuxième appareil.**
+
+## Test depuis un deuxième appareil — 18/11/2026
+
+Selon le compte-rendu historique de la section 1 à 3, l’application a été ouverte depuis un smartphone connecté au même Wi-Fi, avec Google Chrome mobile. L’API, l’interface, les profils, la saisie invalide et la nouvelle simulation y sont marqués **VALIDÉ**.
+
+**Statut : VALIDÉ pour la version testée le 18/11/2026.** La répétition du 19/11 décrite plus haut a été faite depuis l’ordinateur hôte ; elle ne constitue pas un nouvel essai sur smartphone. Les commits et l’empreinte du pipeline utilisés le 18/11 n’ayant pas été consignés, leur correspondance avec la version finale reste à confirmer.
