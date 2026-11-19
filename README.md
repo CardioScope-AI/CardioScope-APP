@@ -17,16 +17,27 @@ CardioScope/
 | [APP](https://github.com/CardioScope-AI/CardioScope-APP) | Intégration, Compose, contrat partagé |
 
 ## Démarrage commun Windows et Linux
-Prérequis : Git, Docker avec moteur Linux actif et Docker Compose v2 ou ultérieur. Sous Windows : Docker Desktop démarré, backend WSL2 configuré et accès aux dossiers autorisé. Ports 5173 et 8000 libres. Internet requis au premier build. Aucun Python ou Node sur l’hôte n’est requis avec Docker.
+Prérequis : Git, Docker avec moteur Linux actif et Docker Compose 2.17 ou ultérieur. Sous Windows : Docker Desktop démarré, backend WSL2 configuré et accès aux dossiers autorisé. Ports 5173 et 8000 libres. Internet requis au premier build. Aucun Python ou Node sur l’hôte n’est requis avec Docker.
 
 Depuis `CardioScope-APP` :
+
+Copier `.env.example` vers `.env` et renseigner POSTGRES_PASSWORD au premier
+lancement. Le frontend compilé est servi par Nginx ; voir le
+[guide APP #21](docs/service-frontend.md). Les sections Preview plus bas décrivent
+les anciens contrôles locaux, pas le service Compose actuel.
+
+Le service Nginx a passé ses contrôles HTTP le 19 novembre 2026 : fichiers
+compilés, proxy API, navigation SPA, erreurs JSON et cache. Voir le
+[rapport APP #21](docs/verification-frontend-nginx.json). Le test local utilise
+5174/8001, les ports habituels étant occupés ; ils sont configurables dans `.env`.
+
 ```text
-docker compose config
+docker compose config --quiet
 docker compose up --build
 ```
 Ouvrir **http://localhost:5173/** ou **http://localhost:5173/#simulation**. Swagger : http://localhost:8000/docs. API via proxy : http://localhost:5173/api/health.
 
-Les services démarrent sans modèle. Le frontend attend seulement le démarrage du backend, pas une réponse 200 de `/health`. Le 503 attendu signifie « modèle indisponible », pas un échec de démarrage.
+Les services démarrent sans modèle. Le frontend attend que le backend écoute sur son port, sans exiger une réponse 200 de `/health`. Le 503 attendu signifie « modèle indisponible », pas un échec de démarrage.
 
 Dans un second terminal, depuis App :
 ```text
@@ -36,7 +47,7 @@ curl.exe -i http://localhost:5173/
 curl.exe -i http://localhost:8000/docs
 curl.exe -i http://localhost:5173/api/health
 ```
-Sous Linux remplacer `curl.exe` par `curl`. Réponses attendues : 200 pour l’interface et Swagger, 503 avec `model_ready: false` pour health sans pipeline. Dans le navigateur, le bouton de disponibilité doit afficher « API accessible · modèle non disponible ». Le frontend utilise `/api` et le proxy Vite contacte `http://backend:8000` sur le réseau Compose.
+Sous Linux remplacer `curl.exe` par `curl`. Réponses attendues : 200 pour l’interface et Swagger, 503 avec `model_ready: false` pour health sans pipeline. Dans le navigateur, le bouton de disponibilité doit afficher « API accessible · modèle non disponible ». Le frontend utilise `/api` et Nginx contacte `http://backend:8000` sur le réseau Compose.
 
 Arrêt : Ctrl+C puis `docker compose down`, ou `docker compose down` depuis un second terminal. Pour démarrer en arrière-plan : `docker compose up --build -d`. Après modification des sources : relancer avec `--build` (pas de montage des sources). Après export du modèle : `docker compose restart backend`.
 
@@ -58,7 +69,7 @@ Dans la simulation, charger chacun des trois profils et vérifier que les 13 cha
 Sans `CardioScope-DATA-ML/artifacts/pipeline.joblib`, les profils valides ne peuvent pas produire de prédiction : l'API répond 503 `model_unavailable`. Une réponse 503 confirme que la requête atteint le backend, mais ne valide pas l'inférence. Pour tester les prédictions réelles, exporter l'artefact ML puis redémarrer le backend Compose.
 
 ## Versions et pipeline
-Images fixées : Node `24.15.0-bookworm-slim`, Python `3.13.7-slim-bookworm`. Frontend installé par `npm ci` et son lockfile, compilé pendant le build Docker puis servi depuis `dist/` avec la commande Compose `npm run preview` ; dépendances Python versionnées dans requirements.txt. Les tags fixent les versions d’exécution, mais pas les correctifs du système de base ni les dépendances Python transitives.
+Images : Node `24.15.0-bookworm-slim` pour compiler, Nginx stable-alpine fixé par digest pour servir, Python `3.13.7-slim-bookworm` pour le backend. Frontend installé par `npm ci` et son lockfile, compilé pendant le build Docker puis servi depuis `dist/` par Nginx ; dépendances Python versionnées dans requirements.txt. Les tags seuls ne figent pas les correctifs du système de base ni les dépendances Python transitives.
 
 Le dossier voisin `../CardioScope-DATA-ML/artifacts` existe dès le clonage et est monté en lecture seule dans `/models`. Le futur `pipeline.joblib` n’est pas nécessaire au démarrage. Backend et ML partagent les versions Python/scikit-learn/joblib/NumPy/SciPy ; voir leurs README. ML reste une image et une commande séparées, sans entraînement dans Compose.
 
