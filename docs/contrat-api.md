@@ -1,6 +1,6 @@
 # Contrat API — Validé par l'équipe
 
-`POST /predict` reçoit et renvoie du JSON. La route n'est pas encore implémentée. Les 13 champs du profil patient sont tous obligatoires. Une valeur absente ou `null` est refusée.
+`POST /predict` reçoit et renvoie du JSON. Les 13 champs du profil patient sont tous obligatoires. Une valeur absente ou `null` est refusée.
 
 Aucune borne métier n'est encore imposée sur les mesures. Un champ JSON supplémentaire est ignoré.
 
@@ -49,3 +49,7 @@ Les erreurs HTTP utilisent le format commun du backend. Pour une donnée invalid
 `fields` n'accompagne que le code 422. Le code 503 est `model_unavailable`, avec le message « Le modèle est indisponible. ». Le code 500 est `internal_error`, avec le message « Une erreur interne est survenue. ».
 
 `GET /health` conserve son format propre : 503 avec `{"status":"model_unavailable","model_ready":false}` ou 200 avec `{"status":"ready","model_ready":true}`. Swagger : `/docs`. Le frontend appelle ces routes avec le préfixe `/api`, retiré par le proxy Vite.
+
+## Extensions proposées
+
+La [proposition admin, historique et modèle](contrat-admin-historique.md) prépare les fonctionnalités suivantes dans APP #16. Sa réponse enrichie de prédiction ne sera applicable qu’à la livraison coordonnée du stockage et de son client frontend ; la réponse minimale décrite ci-dessus reste celle de la version actuelle.
