@@ -1,9 +1,37 @@
 services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cardioscope
+      POSTGRES_USER: cardioscope
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Definir POSTGRES_PASSWORD dans .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardioscope -d cardioscope"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
   backend:
     build:
       context: ../CardioScope-BACKEND
     environment:
       MODEL_PATH: /models/pipeline.joblib
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: cardioscope
+      DB_USER: cardioscope
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Definir POSTGRES_PASSWORD dans .env}
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - type: bind
         source: ../CardioScope-DATA-ML/artifacts
@@ -24,3 +52,6 @@ services:
     depends_on:
       backend:
         condition: service_started
+
+volumes:
+  postgres_data:
