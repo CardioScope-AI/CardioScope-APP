@@ -12,8 +12,9 @@ conservation des simulations et sauvegardes restent à définir dans APP #17.
 
 ## 1. Parcours et choix proposés
 
-- Un visiteur simule sans compte ; seuls des profils fictifs sont acceptés dans
-  l’usage du démonstrateur. Il voit son résultat et peut en exporter une copie.
+- Application exclusivement réservée au compte administrateur : connexion obligatoire
+  pour le formulaire, le résultat, le PDF, l’historique et la fiche du modèle.
+  Seuls des profils fictifs sont acceptés ; aucun parcours visiteur.
 - Un unique administrateur consulte et supprime l’historique global. Il est créé
   par une commande d’initialisation ; aucune inscription publique n’est ajoutée.
 - La consultation publique de l’historique n’existe pas, même si l’identifiant
@@ -49,8 +50,8 @@ Les nouvelles routes ne doivent pas être présentées comme déjà disponibles.
 | Méthode | Route | Accès | Succès | Principales erreurs |
 | --- | --- | --- | --- | --- |
 | GET | `/health` | Public | 200 | 503, format historique conservé |
-| POST | `/predict` | Public | 200 | 422, 503, 500 |
-| GET | `/model-info` | Public | 200 | 503 |
+| POST | `/predict` | Admin + CSRF | 200 | 401, 403, 422, 503, 500 |
+| GET | `/model-info` | Admin connecté | 200 | 401, 503 |
 | GET | `/admin/csrf` | Public ou admin | 200 | 503 |
 | POST | `/admin/login` | Public + protection CSRF | 200 | 401, 403, 422, 429, 503 |
 | GET | `/admin/me` | Admin connecté | 200 | 401, 503 |
@@ -61,7 +62,9 @@ Les nouvelles routes ne doivent pas être présentées comme déjà disponibles.
 
 `/admin/csrf` est une route de support nécessaire au parcours de connexion
 proposé. Elle appartient à la mise en œuvre des sessions, pas à une nouvelle
-fonctionnalité visiteur ni à une inscription.
+inscription. Seuls le login, son support CSRF et la sonde technique /health
+restent accessibles sans session. Swagger et OpenAPI sont limités au
+développement ou protégés au déploiement.
 
 ## 4. Session et protection des actions admin
 
@@ -95,7 +98,7 @@ courante. L’initialisation doit empêcher la création d’un deuxième admini
    un contexte CSRF et répond avec `csrf_token`. Avant login, ce contexte est
    anonyme, expire après 10 minutes et ne donne aucun accès admin.
 2. Le frontend conserve le jeton CSRF en mémoire et envoie `X-CSRF-Token` lors du
-   login, du logout et d’un DELETE. Le token est lié au contexte serveur et vérifié
+   login, du logout, de POST /predict et d’un DELETE. Le token est lié au contexte serveur et vérifié
    avec lui ; un token fourni sans contexte valide est refusé.
 3. Après login, le contexte est renouvelé et lié à la nouvelle session. Le frontend
    redemande `/admin/csrf`. Il peut également le demander après un rechargement.
@@ -170,8 +173,10 @@ répondre encore `204`. Une ancienne session ne redevient jamais utilisable.
 ### Requête existante
 
 Les 13 champs et leurs encodages restent définis dans `contrat-api.md`.
-Aucun identifiant visiteur/admin ni champ `num` n’est requis dans la requête.
-Les saisies restent fictives, même si une session admin existe dans le navigateur.
+Session admin valide, origine autorisée et X-CSRF-Token obligatoires.
+Sans session : 401 ; CSRF refusé : 403. Aucun calcul ni enregistrement dans
+ces cas. L’identité provient de la session, jamais du corps de requête.
+Le champ num est exclu. Les saisies restent fictives.
 
 ### Réponse cible après livraison de l’historique
 
@@ -206,7 +211,7 @@ frontend : le client actuel ne retourne que prediction et devra être adapté.
 - Une coupure réseau peut survenir après un commit ; le frontend ne relance pas
   automatiquement POST /predict. Deux demandes explicites peuvent créer deux
   simulations : ce contrat ne promet pas d’idempotence.
-- Ne pas enregistrer nom patient, identifiant visiteur, adresse IP ou token dans
+- Ne pas enregistrer nom patient, identifiant personnel, adresse IP ou token dans
   la ligne de simulation. Les limites du login sont traitées séparément.
 - La version et le hash proviennent du pipeline et de ses métadonnées contrôlés
   ensemble au démarrage ; ne pas relire une version indépendante à chaque requête.
@@ -282,11 +287,11 @@ de suppression physique/logique et les délais sont arrêtés dans APP #17.
 Le frontend affiche une confirmation puis attend la réponse serveur avant de
 retirer l’élément. Une copie PDF déjà exportée ne peut pas être effacée à distance.
 
-## 8. Informations publiques du modèle
+## 8. Informations du modèle pour l’admin
 
 ### GET /model-info
 
-Sans authentification. Exposer les métadonnées validées du modèle chargé, sans
+Session administrateur obligatoire ; sinon 401. Exposer les métadonnées validées du modèle chargé, sans
 chemin local ni fichier joblib. Réponse `200` proposée ; les valeurs null indiquent
 une métrique non fournie, jamais zéro par défaut.
 
@@ -361,8 +366,8 @@ Les noms exacts des colonnes et migrations appartiennent à BACKEND #16.
 | Contexte CSRF | identifiant/contexte, token vérifiable, expiration, lien session après login | N’accorde aucun accès admin ; stockage à documenter |
 | Limitation login | clé de limitation, fenêtre et compte d’échecs | Partagée entre workers et bornée dans le temps |
 
-L’admin n’est pas le propriétaire d’une simulation : l’historique est global et les
-visiteurs n’ont pas de compte. Une migration ne crée pas de compte avec un mot de
+L’historique regroupe les simulations de l’unique administrateur connecté.
+Aucun compte visiteur ni inscription publique n’existe. Une migration ne crée pas de compte avec un mot de
 passe par défaut ; la commande d’initialisation est distincte.
 
 ## 11. Livraison et compatibilité
@@ -373,9 +378,11 @@ passe par défaut ; la commande d’initialisation est distincte.
 3. Livrer model-info et routes admin avec schémas OpenAPI des erreurs réelles.
 4. Adapter les clients frontend : réponse enrichie de predict, CSRF, cookies,
    identité, liste/détail/suppression et page du modèle.
-5. Configurer la base persistante (APP #18), puis le proxy du frontend compilé
+5. Protéger les vues métier frontend et rediriger vers la connexion après un 401.
+   Configurer la base persistante (APP #18), puis le proxy du frontend compilé
    (APP #21) et les sessions au déploiement (APP #20).
-6. Rejouer la simulation publique actuelle, le parcours admin et les pannes DB/API
+6. Vérifier le refus des accès anonymes aux routes métier, puis rejouer la
+   simulation authentifiée, le parcours admin et les pannes DB/API
    dans la recette APP #23. L’historique n’est pas promis avant cette livraison.
 
 Les scripts existants qui vérifient l’égalité stricte de la réponse minimale de

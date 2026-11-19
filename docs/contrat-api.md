@@ -53,3 +53,10 @@ Les erreurs HTTP utilisent le format commun du backend. Pour une donnée invalid
 ## Extensions proposées
 
 La [proposition admin, historique et modèle](contrat-admin-historique.md) prépare les fonctionnalités suivantes dans APP #16. Sa réponse enrichie de prédiction ne sera applicable qu’à la livraison coordonnée du stockage et de son client frontend ; la réponse minimale décrite ci-dessus reste celle de la version actuelle.
+
+### Accès cible : application réservée à l’administrateur
+
+Dans les extensions APP #16, toutes les fonctionnalités métier nécessitent une
+session administrateur. `POST /predict` exige aussi une protection CSRF. Le schéma
+des 13 champs reste inchangé. Cette protection cible reste à implémenter ; voir
+[le contrat admin](contrat-admin-historique.md). Aucun parcours visiteur n’est prévu.
