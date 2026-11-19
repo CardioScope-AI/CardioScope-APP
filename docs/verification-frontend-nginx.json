@@ -1,0 +1,14 @@
+{
+  "verified_at_utc": "2026-11-19T18:36:31.611Z",
+  "base": "http://127.0.0.1:5174",
+  "checks": {
+    "html": 200,
+    "compiled_assets": 2,
+    "api_health": 200,
+    "spa_reload": 200,
+    "missing_asset": 404,
+    "api_missing_route": 404,
+    "api_invalid_post": 422,
+    "cache_headers": true
+  }
+}

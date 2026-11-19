@@ -22,6 +22,12 @@ services:
   backend:
     build:
       context: ../CardioScope-BACKEND
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), timeout=2).close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
     environment:
       MODEL_PATH: /models/pipeline.joblib
       DB_HOST: db
@@ -40,18 +46,18 @@ services:
         bind:
           create_host_path: false
     ports:
-      - "${CARDIOSCOPE_BIND_ADDRESS:-127.0.0.1}:8000:8000"
+      - "${CARDIOSCOPE_BIND_ADDRESS:-127.0.0.1}:${BACKEND_PORT:-8000}:8000"
   frontend:
     build:
-      context: ../CardioScope-FRONTEND
-    command: ["npm", "run", "preview"]
-    environment:
-      API_PROXY_TARGET: http://backend:8000
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      additional_contexts:
+        frontend: ../CardioScope-FRONTEND
     ports:
-      - "${CARDIOSCOPE_BIND_ADDRESS:-127.0.0.1}:5173:5173"
+      - "${CARDIOSCOPE_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_PORT:-5173}:8080"
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   postgres_data:
