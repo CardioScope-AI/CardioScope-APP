@@ -29,7 +29,9 @@ services:
       retries: 12
       start_period: 10s
     environment:
-      MODEL_PATH: /models/pipeline.joblib
+      MODEL_PATH: ${MODEL_PATH:-/models/pipeline.joblib}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-true}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
       DB_HOST: db
       DB_PORT: "5432"
       DB_NAME: cardioscope
