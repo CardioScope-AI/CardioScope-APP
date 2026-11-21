@@ -23,11 +23,11 @@ Le compte initial de l’image est un compte privilégié d’exploitation, adap
 démonstrateur isolé. Avant un déploiement partagé, séparer le compte de migration
 du compte applicatif aux droits minimaux. Ne pas exposer la base à Internet.
 
-DB_HOST, DB_PORT, DB_NAME, DB_USER et DB_PASSWORD sont transmis au backend comme
-interface de configuration prévue. BACKEND #16 doit les lire, ajouter le pilote
-PostgreSQL et les migrations. Le backend actuel ne les consomme pas encore : cette
-tâche ne crée ni tables admin ni historique. Construire l’URL SQLAlchemy avec ses
-composants, sans concaténer le mot de passe brut.
+DB_HOST, DB_PORT, DB_NAME, DB_USER et DB_PASSWORD sont transmis au backend.
+L’application du schéma et la création du compte initial sont des étapes
+explicites : suivre le [guide APP #19](migrations-initialisation-admin.md) avec
+une image backend qui contient Alembic et `app.init_admin`. Ce guide ne remplace
+pas la migration ; Compose ne l’exécute pas automatiquement au démarrage.
 
 ## Vérifier la conservation après recréation
 
@@ -88,5 +88,6 @@ exécuté avec PostgreSQL 17.12 sous Docker Desktop : création d’une ligne te
 recréation du conteneur (identifiants différents), lecture de la même ligne après
 recréation, puis suppression de la table temporaire. Le service db est healthy.
 
-La persistance du volume est validée. Ce contrôle ne valide pas les futures tables
-applicatives, les migrations, le login ou l’enregistrement des simulations.
+La persistance du volume est validée. Ce contrôle ne prouve pas que les migrations
+ont été appliquées, que l’admin a été initialisé, ni que le login et les parcours
+métier fonctionnent.
