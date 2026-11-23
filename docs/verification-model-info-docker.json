@@ -1,0 +1,16 @@
+{
+  "verified_at_utc": "2026-11-20T13:06:30.643402Z",
+  "scope": "Docker/Linux; real release; temporary PostgreSQL database and admin; HTTP loopback",
+  "http_checks": {
+    "health": 200,
+    "anonymous_model_info": 401,
+    "csrf": 200,
+    "login": 200,
+    "me": 200,
+    "authenticated_model_info": 200
+  },
+  "model_version": "rf-cleveland-v1",
+  "artifact_sha256": "66a7e43813af0416fbbaa5af209e6b0ab852d9d4b8359e7a7bf132698ad0753d",
+  "test_accuracy": 0.8689,
+  "cache_control": "no-store"
+}
