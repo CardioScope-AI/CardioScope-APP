@@ -25,6 +25,8 @@ Copier `.env.example` vers `.env` et renseigner POSTGRES_PASSWORD au premier
 lancement. Le frontend compilé est servi par Nginx ; voir le
 [guide APP #21](docs/service-frontend.md). Les sections Preview plus bas décrivent
 les anciens contrôles locaux, pas le service Compose actuel.
+Pour configurer les cookies de session, les origines autorisées et le proxy HTTPS,
+suivre le [guide APP #20](docs/sessions-deploiement.md).
 
 Le service Nginx a passé ses contrôles HTTP le 19 novembre 2026 : fichiers
 compilés, proxy API, navigation SPA, erreurs JSON et cache. Voir le
