@@ -85,6 +85,8 @@ def verify():
                 time.sleep(1)
         anonymous, error, _ = request("/model-info")
         assert anonymous == 401 and error["error"]["code"] == "unauthenticated"
+        anonymous_catalog, _, _ = request("/models")
+        assert anonymous_catalog == 401
         csrf_status, csrf, _ = request("/admin/csrf")
         assert csrf_status == 200
         login_status, _, _ = request("/admin/login",
@@ -98,11 +100,31 @@ def verify():
         assert info["model_version"] == manifest["model_version"]
         assert info["artifact_sha256"] == manifest["artifact_sha256"]
         assert headers["Cache-Control"] == "no-store"
+        catalog_status, catalog, catalog_headers = request("/models")
+        assert catalog_status == 200
+        assert catalog["active_model_version"] == info["model_version"]
+        assert catalog_headers["Cache-Control"] == "no-store"
+        if os.environ.get("COMPARISON_MODEL_PATHS"):
+            assert any(card["model_name"] == "XGBClassifier" for card in catalog["models"])
+        # A real request must still use the active RF, independent of the catalogue.
+        from app.model_info import load_snapshot
+        from app.profile import COLUMNS
+        import pandas as pd
+        profile = dict(age=63, sex=1, cp=1, trestbps=145, chol=233, fbs=1,
+                       restecg=2, thalach=150, exang=0, oldpeak=2.3, slope=3, ca=0, thal=6)
+        predictor, _ = load_snapshot(model)
+        expected = int(predictor.predict(pd.DataFrame([profile], columns=COLUMNS))[0])
+        predict_status, predicted, _ = request('/predict', profile, {'Content-Type': 'application/json'})
+        assert predict_status == 200 and predicted['prediction'] == expected
         return {"verified_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "scope": "Docker/Linux; real release; temporary PostgreSQL database and admin; HTTP loopback",
                 "http_checks": {"health": 200, "anonymous_model_info": anonymous,
                                 "csrf": csrf_status, "login": login_status,
-                                "me": me_status, "authenticated_model_info": info_status},
+                                "me": me_status, "authenticated_model_info": info_status,
+                                "anonymous_catalog": anonymous_catalog, "authenticated_catalog": catalog_status,
+                                "active_prediction": predict_status},
+                "catalog_versions": [card["model_version"] for card in catalog["models"]],
+                "catalog": catalog,
                 "model_version": info["model_version"], "artifact_sha256": info["artifact_sha256"],
                 "test_accuracy": info["evaluation"]["test_metrics"]["accuracy"],
                 "cache_control": headers["Cache-Control"]}

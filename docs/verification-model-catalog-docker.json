@@ -1,0 +1,151 @@
+{
+  "verified_at_utc": "2026-11-27T02:03:05.129705Z",
+  "scope": "Docker/Linux; real release; temporary PostgreSQL database and admin; HTTP loopback",
+  "http_checks": {
+    "health": 200,
+    "anonymous_model_info": 401,
+    "csrf": 200,
+    "login": 200,
+    "me": 200,
+    "authenticated_model_info": 200,
+    "anonymous_catalog": 401,
+    "authenticated_catalog": 200,
+    "active_prediction": 200
+  },
+  "catalog_versions": [
+    "rf-cleveland-v1",
+    "xgb-cleveland-v1"
+  ],
+  "catalog": {
+    "schema_version": 1,
+    "active_model_version": "rf-cleveland-v1",
+    "models": [
+      {
+        "schema_version": 1,
+        "model_version": "rf-cleveland-v1",
+        "artifact_sha256": "66a7e43813af0416fbbaa5af209e6b0ab852d9d4b8359e7a7bf132698ad0753d",
+        "model_name": "RandomForestClassifier",
+        "dataset": "UCI Heart Disease / Cleveland",
+        "features": [
+          "age",
+          "sex",
+          "cp",
+          "trestbps",
+          "chol",
+          "fbs",
+          "restecg",
+          "thalach",
+          "exang",
+          "oldpeak",
+          "slope",
+          "ca",
+          "thal"
+        ],
+        "target": {
+          "0": "absence",
+          "1": "pr\u00e9sence"
+        },
+        "evaluation": {
+          "train_samples": 242,
+          "test_samples": 61,
+          "cv_folds": 5,
+          "cv_metrics": {
+            "accuracy": 0.8181,
+            "precision": 0.8173,
+            "recall": 0.7826,
+            "f1": 0.7948,
+            "roc_auc": 0.8967,
+            "specificity": null
+          },
+          "test_metrics": {
+            "accuracy": 0.8689,
+            "precision": 0.8125,
+            "recall": 0.9286,
+            "f1": 0.8667,
+            "roc_auc": 0.9421,
+            "specificity": 0.8182
+          },
+          "confusion_matrix": {
+            "true_negative": 27,
+            "false_positive": 6,
+            "false_negative": 2,
+            "true_positive": 26
+          }
+        },
+        "limitations": [
+          "D\u00e9monstrateur p\u00e9dagogique ; ceci ne constitue pas un diagnostic m\u00e9dical.",
+          "Utiliser uniquement des profils fictifs.",
+          "Dataset historique Cleveland de 303 observations ; absence de validation externe d\u00e9montr\u00e9e.",
+          "La classe 0 ou 1 ne pr\u00e9dit pas un risque \u00e0 5 ou 10 ans ; des erreurs sont possibles.",
+          "Probabilit\u00e9s non calibr\u00e9es et performances par sous-groupe non \u00e9tablies.",
+          "Le mod\u00e8le ne se r\u00e9entra\u00eene pas automatiquement \u00e0 partir des nouvelles donn\u00e9es ou des simulations enregistr\u00e9es."
+        ]
+      },
+      {
+        "schema_version": 1,
+        "model_version": "xgb-cleveland-v1",
+        "artifact_sha256": "19769cbb5d60d6320b97f8e40e2a3ba069aafdfd9b0f5b86421c47ebfef5b30d",
+        "model_name": "XGBClassifier",
+        "dataset": "UCI Heart Disease / Cleveland",
+        "features": [
+          "age",
+          "sex",
+          "cp",
+          "trestbps",
+          "chol",
+          "fbs",
+          "restecg",
+          "thalach",
+          "exang",
+          "oldpeak",
+          "slope",
+          "ca",
+          "thal"
+        ],
+        "target": {
+          "0": "absence",
+          "1": "pr\u00e9sence"
+        },
+        "evaluation": {
+          "train_samples": 242,
+          "test_samples": 61,
+          "cv_folds": 5,
+          "cv_metrics": {
+            "accuracy": 0.8017,
+            "precision": 0.7869,
+            "recall": 0.7834,
+            "f1": 0.7828,
+            "roc_auc": 0.8843,
+            "specificity": 0.8165
+          },
+          "test_metrics": {
+            "accuracy": 0.918,
+            "precision": 0.871,
+            "recall": 0.9643,
+            "f1": 0.9153,
+            "roc_auc": 0.9524,
+            "specificity": 0.8788
+          },
+          "confusion_matrix": {
+            "true_negative": 29,
+            "false_positive": 4,
+            "false_negative": 1,
+            "true_positive": 27
+          }
+        },
+        "limitations": [
+          "D\u00e9monstrateur p\u00e9dagogique ; ceci ne constitue pas un diagnostic m\u00e9dical.",
+          "Utiliser uniquement des profils fictifs.",
+          "Dataset historique Cleveland de 303 observations ; absence de validation externe d\u00e9montr\u00e9e.",
+          "La classe 0 ou 1 ne pr\u00e9dit pas un risque \u00e0 5 ou 10 ans ; des erreurs sont possibles.",
+          "Probabilit\u00e9s non calibr\u00e9es et performances par sous-groupe non \u00e9tablies.",
+          "Le mod\u00e8le ne se r\u00e9entra\u00eene pas automatiquement \u00e0 partir des nouvelles donn\u00e9es ou des simulations enregistr\u00e9es."
+        ]
+      }
+    ]
+  },
+  "model_version": "rf-cleveland-v1",
+  "artifact_sha256": "66a7e43813af0416fbbaa5af209e6b0ab852d9d4b8359e7a7bf132698ad0753d",
+  "test_accuracy": 0.8689,
+  "cache_control": "no-store"
+}

@@ -30,6 +30,7 @@ services:
       start_period: 10s
     environment:
       MODEL_PATH: ${MODEL_PATH:-/models/pipeline.joblib}
+      COMPARISON_MODEL_PATHS: ${COMPARISON_MODEL_PATHS:-}
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-true}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
       DB_HOST: db
