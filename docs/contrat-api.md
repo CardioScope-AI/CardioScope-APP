@@ -60,3 +60,9 @@ Dans les extensions APP #16, toutes les fonctionnalités métier nécessitent un
 session administrateur. `POST /predict` exige aussi une protection CSRF. Le schéma
 des 13 champs reste inchangé. Cette protection cible reste à implémenter ; voir
 [le contrat admin](contrat-admin-historique.md). Aucun parcours visiteur n’est prévu.
+
+## Extension : catalogue des modèles
+
+Voir [le contrat du catalogue](contrat-catalogue-modeles.md) pour `GET /models`
+authentifié, la comparaison Random Forest / XGBoost et le maintien du modèle
+actif pour les simulations.
