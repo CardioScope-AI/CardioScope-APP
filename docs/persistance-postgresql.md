@@ -76,8 +76,11 @@ base et une mise à jour coordonnée du backend. Un changement de version majeur
 de PostgreSQL nécessite une migration, pas un remplacement direct du tag.
 
 La rotation des logs Docker limite leur taille ; elle ne garantit pas 14 jours.
-La purge quotidienne, la rétention temporelle des logs et les sauvegardes de
-7 jours restent à implémenter selon [APP #17](regles-conservation.md).
+La purge quotidienne et la rétention temporelle des logs restent à vérifier
+selon [APP #17](regles-conservation.md). Le
+[guide APP #24](sauvegarde-restauration.md) décrit la sauvegarde chiffrée,
+la rotation locale sur sept jours et la restauration ; la planification
+quotidienne doit être configurée sur chaque machine d'exploitation.
 
 Référence : [image officielle PostgreSQL](https://hub.docker.com/_/postgres).
 
