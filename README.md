@@ -268,6 +268,10 @@ La [politique de conservation proposée (APP #17)](docs/regles-conservation.md)
 précise les durées, la suppression, la purge et le traitement des sauvegardes.
 Elle est validée par l’équipe (confirmation du 19 novembre 2026) et reste à implémenter dans le backend et le déploiement.
 
+Le [guide de sauvegarde et restauration (APP #24)](docs/sauvegarde-restauration.md)
+décrit le chiffrement des copies PostgreSQL, la rotation sur sept jours,
+un essai de restauration isolé et les contrôles avant réouverture du service.
+
 La [proposition de contrat des nouvelles fonctionnalités](docs/contrat-admin-historique.md) documente les routes admin, les sessions/cookies et CSRF, la consultation et la suppression des simulations, les informations du modèle ainsi que la réponse de prédiction enrichie prévue lors de la livraison de l’historique.
 
 Ce contrat est validé par l’équipe (confirmation du 19 novembre 2026) ; les extensions restent à implémenter. PostgreSQL, SQLAlchemy/Alembic et les paramètres de session sont les choix retenus. Le contrat de prédiction actuel reste la référence de la version en service. Les durées et procédures de conservation appartiennent à APP #17 ; la base persistante à APP #18 et le service du frontend compilé à APP #21.
